@@ -64,8 +64,12 @@ class PypoFile(Thread):
                 username = self._config.get(CONFIG_SECTION, 'api_key')
                 host = self._config.get(CONFIG_SECTION, 'base_url')
                 port = self._config.get(CONFIG_SECTION, 'base_port', 80)
-                url = "http://%s:%s/rest/media/%s/download" % (host, port, media_item["id"])
-                self.logger.error(url)
+
+                url = "%s://%s:%s/rest/media/%s/download" % (str(("http", "https")[int(port) == 443]),
+                                                             host,
+                                                             port,
+                                                             media_item["id"])
+                self.logger.info(url)
                 with open(dst, "wb") as handle:
                     response = requests.get(url, auth=requests.auth.HTTPBasicAuth(username, ''), stream=True, verify=False)
                     
@@ -80,7 +84,7 @@ class PypoFile(Thread):
                         handle.write(chunk)
 
                 #make file world readable
-                os.chmod(dst, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+                os.chmod(dst, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
 
                 if media_item['filesize'] == 0:
                     file_size = self.report_file_size_and_md5_to_airtime(dst, media_item["id"], host, username)
