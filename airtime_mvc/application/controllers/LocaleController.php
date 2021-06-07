@@ -122,12 +122,6 @@ final class LocaleController extends Zend_Controller_Action
             "Import" => _("Import"),         
             "Imported?" => _("Imported?"),
             "View" => _("View"),
-            // SOUNDCLOUD
-            "Are you sure? SoundCloud stats and comments for this track will be permanently removed." => "Are you sure? SoundCloud stats and comments for this track will be permanently removed.",
-            "Your track is being deleted from SoundCloud" => "Your track is being deleted from SoundCloud",
-            "Your track is being uploaded and will appear on SoundCloud in a couple of minutes" => "Your track is being uploaded and will appear on SoundCloud in a couple of minutes",
-            "The soundcloud id for this file is: " => _("The soundcloud id for this file is: "),
-            "There was an error while uploading to soundcloud." => _("There was an error while uploading to soundcloud."),
             "Error code: " => _("Error code: "),
             "Error msg: " => _("Error msg: "),
             "Input must be a positive number" => _("Input must be a positive number"),
@@ -229,11 +223,6 @@ final class LocaleController extends Zend_Controller_Action
             "60m" => _("60m"),
             "Uploading in progress..." => _("Uploading in progress..."),
             "Retreiving data from the server..." => _("Retreiving data from the server..."),
-            //already in library/library.js
-            //"The soundcloud id for this file is: " => _("The soundcloud id for this file is: "),
-            //"There was error while uploading to soundcloud." => _("There was error while uploading to soundcloud."),
-            //"Error code: " => _("Error code: "),
-            //"Error msg: " => _("Error msg: "),
             "This show has no scheduled content." => _("This show has no scheduled content."),
             "This show is not completely filled with content." => _("This show is not completely filled with content."),
             //already in schedule/add-show.js
@@ -436,7 +425,6 @@ final class LocaleController extends Zend_Controller_Action
             ": activate to sort column ascending",
             ": activate to sort column descending",
             //End of datatables
-            "Welcome to the new Airtime Pro!" => _("Welcome to the new Airtime Pro!"),
 		
 		//New entries from .js	"" => _(""),
 		"First" => _("First"),
@@ -477,7 +465,7 @@ final class LocaleController extends Zend_Controller_Action
 		"Disabled" => _("Disabled"),
 		"Cancel upload" => _("Cancel upload"),
 		"Type" => _("Type"),
-		"Autoloading playlists' contents are added to shows one hour before the show airs. <a target='_blank' href='http://libretime.org/manual/calendar/#autoloading-playlist'>More information</a>" => _("Autoloading playlists' contents are added to shows one hour before the show airs. <a target='_blank' href='http://libretime.org/manual/calendar/#autoloading-playlist'>More information</a>"),
+		"Autoloading playlists' contents are added to shows one hour before the show airs. <a target='_blank' href='http://libretime.org/docs/playlists'>More information</a>" => _("Autoloading playlists' contents are added to shows one hour before the show airs. <a target='_blank' href='http://libretime.org/docs/playlists'>More information</a>"),
 		"Podcast settings saved" => _("Podcast settings saved"),
 		"Are you sure you want to delete this user?" => _("Are you sure you want to delete this user?"),
 		"Can't delete yourself!" => _("Can't delete yourself!"),

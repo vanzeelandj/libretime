@@ -35,13 +35,13 @@ showhelp () {
     -r, --web-root=WEB_ROOT
                 Set the web root for Airtime files
                 This will copy the Airtime application files, but you will need
-                to give your web user access to the given directory if it is 
+                to give your web user access to the given directory if it is
                 not accessible
     --web-port=WEB_PORT
                 Set what port the LibreTime interface should run on.
     -I, --in-place
                 Set the current Airtime directory as the web root
-                Note that you will need to give your web user permission to 
+                Note that you will need to give your web user permission to
                 access this directory if it is not accessible
     -p, --postgres
                 Create a default postgres user named 'airtime' with password
@@ -107,7 +107,7 @@ function loud() {
     fi
 }
 
-# Evaluate commands silently if quiet. 
+# Evaluate commands silently if quiet.
 # If not quiet, output command if verbose.
 function loudCmd() {
     if [[ ${_q} -eq 0 ]]; then
@@ -131,12 +131,12 @@ function checkCommandExists() {
 }
 
 # Function to determine if systemd, Upstart or System V Init is the active
-# init system. All the newer supported distros use systemd out-of-the-box but 
+# init system. All the newer supported distros use systemd out-of-the-box but
 # a sysadmin could have installed an alternative init compatibility package.
-# As a result, making assumptions based on the distribution and release is 
+# As a result, making assumptions based on the distribution and release is
 # not a good idea. The detection works as follows:
 # 1. Get the process name where PID=1 and follow any symlinks.
-# 2. Look up that path in the appropriate package manager to get the name 
+# 2. Look up that path in the appropriate package manager to get the name
 #    of the package that process is part of.
 # See https://unix.stackexchange.com/questions/196166/how-to-find-out-if-a-system-uses-sysv-upstart-or-systemd-initsystem
 has_systemd_init=false
@@ -199,6 +199,11 @@ function systemInitInstall() {
                 ;;
             libretime-liquidsoap|libretime-playout)
                 source_path="${python_source_path}/pypo/install/systemd/${service_name}.service"
+                target_path="/etc/systemd/system/${service_name}.service"
+                alt_path=$(echo $target_path | sed 's/libretime-/airtime-/')
+                ;;
+            libretime-api)
+                source_path="${SCRIPT_DIR-$PWD}/api/install/systemd/${service_name}.service"
                 target_path="/etc/systemd/system/${service_name}.service"
                 alt_path=$(echo $target_path | sed 's/libretime-/airtime-/')
                 ;;
@@ -333,7 +338,7 @@ function systemInitInstall() {
 
 # Function to wrap different systemd vs. Upstart init commands depending
 # on which init system has been detected. Syntax is similar to systemctl.
-# Usage: 
+# Usage:
 #   systemInitCommand _command_ [service-name ...]
 # Where _command_ is one of: start, stop, status, reload, restart
 #   enable, disable and either daemon-reload or reload-configuration.
@@ -363,10 +368,10 @@ function systemInitCommand() {
                 fi
             fi
             ;;
-        daemon-reload|reload-configuration) 
-            $has_systemd_init && 
+        daemon-reload|reload-configuration)
+            $has_systemd_init &&
                 loudCmd "systemctl daemon-reload"
-            $has_upstart_init && 
+            $has_upstart_init &&
                 loudCmd "initctl reload-configuration"
             ;;
         *) echo -e "$0:${FUNCNAME}(): ERROR: command \"$command\" is not supported!" >&2
@@ -624,6 +629,7 @@ is_ubuntu_bionic=false
 is_ubuntu_xenial=false
 is_centos_dist=false
 is_centos_7=false
+is_centos_8=false
 # Use specified distribution and release or detected otherwise.
 dist="${dist:-$ID}"
 code="${code:-$VERSION_ID}"
@@ -682,9 +688,9 @@ case "${dist}-${code}" in
         echo -e "The LibreTime installer dropped support for installing LibreTime on Wheezy in 3.0.0-alpha.6." >&2
         exit 1
         ;;
-    centos-7)
+    centos-8)
         is_centos_dist=true
-        is_centos_7=true
+        is_centos_8=true
         ;;
     *)
         echo -e "ERROR: Distribution \"$PRETTY_NAME\" is not supported with \"${dist}-${code}\"!" >&2
@@ -697,10 +703,12 @@ verbose "Using distribution id \"$dist\", release code \"$code\""
 systemInitDetect
 
 if $is_centos_dist; then
+    python_bin="python3.8"
     apache_bin="httpd"
     apache_service="httpd"
     web_user="${web_user:-apache}"
 else
+    python_bin="python3"
     apache_bin="apache2ctl"
     apache_service="apache2"
     web_user="${web_user:-www-data}"
@@ -712,9 +720,13 @@ if [ "$ignore_dependencies" = "f" ]; then
     loud "         * Installing External Dependencies *        "
     loud "-----------------------------------------------------"
 
+    if $is_ubuntu_dist; then
+    	loudCmd "add-apt-repository -y ppa:libretime/libretime"
+    	fi
+
     if [ -x /usr/bin/apt-get ]; then
         verbose "\n * Reading requirements-${dist}-${code}.apt..."
-        loudCmd "apt-get update"
+        loudCmd "apt-get -q update"
         package_list_file="${SCRIPT_DIR}/installer/lib/requirements-${dist}-${code}.apt"
         if [ ! -f "$package_list_file" ]; then
             echo "ERROR: package file does not exist: $package_list_file" >&2
@@ -768,11 +780,11 @@ loudCmd "./build.sh"
 if [ -f /etc/airtime/airtime.conf ]; then
     # TODO use VERSION or some other way to check for updates and handle
     # media-monitor case on it's own
-    OLD_CONF=$(grep "[media-monitor]" /etc/airtime/airtime.conf)
-    
+    OLD_CONF=$(grep -F "[media-monitor]" /etc/airtime/airtime.conf || true)
+
     if [ -n "${OLD_CONF}" ]; then
         upgrade="t"
-    
+
         set +e
         verbose "Stopping airtime services..."
         systemInitCommand stop airtime_analyzer airtime-celery airtime-playout airtime-liquidsoap airtime-media-monitor
@@ -784,7 +796,7 @@ if [ -f /etc/airtime/airtime.conf ]; then
 
         echo "Looks like you have an old version of Airtime. Your current /etc/airtime/airtime.conf \
 will be moved to /etc/airtime/airtime.conf.tmp"
-        # If we don't remove the existing python files in /usr/lib and the 
+        # If we don't remove the existing python files in /usr/lib and the
         # /etc/init.d startup scripts, services won't work properly
         if [ -d /usr/lib/airtime/ ]; then
             rm -rf /usr/lib/airtime/
@@ -795,18 +807,25 @@ will be moved to /etc/airtime/airtime.conf.tmp"
         rm -f /etc/default/airtime-celery
 
         if [ "$apache" = "t" ]; then
-            # If the user selects an "in-place" install or passes in a web root, 
+            # If the user selects an "in-place" install or passes in a web root,
             # we need to replace the old apache airtime.conf
-            rm /etc/apache2/sites-available/airtime.conf /etc/apache2/sites-enabled/airtime.conf
+            rm -f /etc/apache2/sites-available/airtime.conf /etc/apache2/sites-enabled/airtime.conf
         fi
-        
+
         if [ -d /usr/share/airtime -a web_root = /usr/share/airtime ]; then
             rm -rf /usr/share/airtime
         fi
-        
+
         mv /etc/airtime/airtime.conf /etc/airtime/airtime.conf.tmp
         set -e
     fi
+fi
+
+API2_APACHE_CONF=$(grep -F "ProxyPass" /etc/apache2/sites-available/airtime.conf || true)
+if [ -z "${API2_APACHE_CONF}" -a "$apache" = "t" ]; then
+    # Remove Apache configuration so that the ProxyPass configuration for API 2.0
+    # is installed
+    rm -f /etc/apache2/sites-available/airtime.conf /etc/apache2/sites-enabled/airtime.conf
 fi
 
 if [ "$apache" = "f" -a ${_i} -eq 1 ]; then
@@ -924,7 +943,7 @@ if [ "$icecast" = "t" ]; then
     loud "\n-----------------------------------------------------"
     loud "               * Configuring Icecast *                "
     loud "-----------------------------------------------------"
-    
+
     verbose "\n * Enabling Icecast 2..."
     icecast_unit_name="icecast2"
     if [ "$dist" != "centos" ]; then
@@ -934,7 +953,8 @@ if [ "$icecast" = "t" ]; then
         icecast_unit_name="icecast"
 	icecast_config="/etc/icecast.xml"
     fi
-    # only update icecast password if 
+    systemInitCommand enable ${icecast_unit_name}
+    # only update icecast password if
     if [ ! -e "/etc/airtime/airtime.conf" ] && [ ! -e "/etc/airtime/airtime.conf.tmp" ]; then
         icecast_pass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-12};)
         echo $icecast_pass > /tmp/icecast_pass
@@ -952,11 +972,11 @@ loud "\n-----------------------------------------------------"
 loud "          * Installing Airtime Services *            "
 loud "-----------------------------------------------------"
 
-python_version=$(python3 --version 2>&1 | awk '{ print $2 }')
+python_version=$($python_bin --version 2>&1 | awk '{ print $2 }')
 verbose "Detected Python version: $python_version"
 
 verbose "\n * Installing necessary python services..."
-loudCmd "pip3 install setuptools --upgrade"
+loudCmd "$python_bin -mpip install setuptools --upgrade"
 verbose "...Done"
 
 verbose "\n * Creating /run/airtime..."
@@ -979,11 +999,11 @@ if [ ! -d /var/log/airtime ]; then
 fi
 
 verbose "\n * Installing API client..."
-loudCmd "python3 ${AIRTIMEROOT}/python_apps/api_clients/setup.py install --install-scripts=/usr/bin"
+loudCmd "$python_bin ${AIRTIMEROOT}/python_apps/api_clients/setup.py install --install-scripts=/usr/bin"
 verbose "...Done"
 
 verbose "\n * Installing pypo and liquidsoap..."
-loudCmd "python3 ${AIRTIMEROOT}/python_apps/pypo/setup.py install --install-scripts=/usr/bin --no-init-script"
+loudCmd "$python_bin ${AIRTIMEROOT}/python_apps/pypo/setup.py install --install-scripts=/usr/bin --no-init-script"
 loudCmd "mkdir -p /var/log/airtime/{pypo,pypo-liquidsoap} /var/tmp/airtime/pypo/{cache,files,tmp} /var/tmp/airtime/show-recorder/"
 loudCmd "chown -R ${web_user}:${web_user} /var/log/airtime/{pypo,pypo-liquidsoap} /var/tmp/airtime/pypo/{cache,files,tmp} /var/tmp/airtime/show-recorder/"
 systemInitInstall libretime-liquidsoap $web_user
@@ -991,7 +1011,7 @@ systemInitInstall libretime-playout $web_user
 verbose "...Done"
 
 verbose "\n * Installing airtime-celery..."
-loudCmd "python3 ${AIRTIMEROOT}/python_apps/airtime-celery/setup.py install --no-init-script"
+loudCmd "$python_bin ${AIRTIMEROOT}/python_apps/airtime-celery/setup.py install --no-init-script"
 # Create the Celery user
 if $is_centos_dist; then
     loudCmd "id celery 2>/dev/null || adduser --no-create-home -c 'LibreTime Celery' -r celery || true"
@@ -1006,9 +1026,19 @@ loudCmd "usermod -G ${web_user} -a celery"
 systemInitInstall libretime-celery
 verbose "...Done"
 
-verbose "\n * Installing airtime_analyzer..."
-loudCmd "python3 ${AIRTIMEROOT}/python_apps/airtime_analyzer/setup.py install --install-scripts=/usr/bin --no-init-script"
+verbose "\n * Installing libretime-analyzer..."
+loudCmd "$python_bin ${AIRTIMEROOT}/python_apps/airtime_analyzer/setup.py install --install-scripts=/usr/bin"
 systemInitInstall libretime-analyzer $web_user
+verbose "...Done"
+
+verbose "\n * Installing API..."
+loudCmd "python3 ${AIRTIMEROOT}/api/setup.py install --install-scripts=/usr/bin"
+systemInitInstall libretime-api $web_user
+mkdir -p /etc/airtime
+sed -e "s@WEB_USER@${web_user}@g" \
+    -e "s@WEB_ROOT@${web_root}@g" \
+    ${AIRTIMEROOT}/installer/uwsgi/libretime-api.ini > /etc/airtime/libretime-api.ini
+loudCmd "libretime-api collectstatic --clear --noinput"
 verbose "...Done"
 
 verbose "\n * Setting permissions on /var/log/airtime..."
@@ -1050,15 +1080,15 @@ fi
 
 # Enable Apache modules
 if $is_debian_buster; then
-    loudCmd "a2enmod rewrite php7.3"
+    loudCmd "a2enmod rewrite php7.3 proxy proxy_http"
 elif $is_ubuntu_bionic; then
-    loudCmd "a2enmod rewrite php7.2"
+    loudCmd "a2enmod rewrite php7.2 proxy proxy_http"
 elif $is_ubuntu_xenial || $is_debian_stretch; then
-    loudCmd "a2enmod rewrite php7.0"
+    loudCmd "a2enmod rewrite php7.0 proxy proxy_http"
 elif $is_centos_dist; then
-    verbose "TODO: enable Apache modules mod_rewrite and mod_php manually"
+    verbose "TODO: enable Apache modules mod_rewrite, mod_php, mod_proxy and mod_proxy_http manually"
 else
-    loudCmd "a2enmod rewrite php5"
+    loudCmd "a2enmod rewrite php5 proxy proxy_http"
 fi
 
 if [ $skip_postgres -eq 0 ]; then
@@ -1076,8 +1106,8 @@ if [ $skip_postgres -eq 0 ]; then
         count=$(psql -d postgres -tAc "SELECT count(*) FROM pg_roles WHERE rolname='airtime';")
         if [[ $count -eq 0 ]]; then
             psql -d postgres -tAc "CREATE USER airtime WITH ENCRYPTED PASSWORD 'airtime'; ALTER USER airtime CREATEDB;"
-            [[ $? -eq 0 ]] && 
-                  echo "Created airtime user in PostgreSQL" || 
+            [[ $? -eq 0 ]] &&
+                  echo "Created airtime user in PostgreSQL" ||
                   echo "$0:${FUNCNAME}(): ERROR: Can't create airtime user in PostgreSQL!"
         else
             echo "airtime user already exists in PostgreSQL"
@@ -1133,7 +1163,7 @@ fi
 
 if [ ! -d "/etc/airtime" ]; then
     loud "\n-----------------------------------------------------"
-    loud "                * Installing Airtime *               "
+    loud "                * Installing Libretime *               "
     loud "-----------------------------------------------------"
 
     verbose "\n * Creating /etc/airtime/ directory..."
@@ -1212,8 +1242,8 @@ verbose "...Done"
 echo -e "\n-----------------------------------------------------"
 echo    "                * Basic Setup DONE! *                "
 echo    "                                                     "
-echo    " To get started with Airtime, visit ${IP}            "
+echo    " To get started with Libretime, visit ${IP}            "
 echo    " or, if you've set up your own web configuration,    "
-echo    " the Airtime webroot on your webserver               "
+echo    " the Libretime webroot on your webserver               "
 echo    "-----------------------------------------------------"
 

@@ -1,5 +1,6 @@
 ---
-openapi: "3.0.0"
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: "3.1.0"
 info:
   title: LibreTime API overview
   version: 1.1
@@ -100,11 +101,6 @@ paths:
                     "subject": null,
                     "contributor": null,
                     "language": null,
-                    "soundcloud_id": null,
-                    "soundcloud_error_code": null,
-                    "soundcloud_error_msg": null,
-                    "soundcloud_link_to_file": null,
-                    "soundcloud_upload_time": null,
                     "replay_gain": "-5.58",
                     "owner_id": 1,
                     "cuein": "00:00:00",
@@ -179,11 +175,6 @@ paths:
                     "subject": null,
                     "contributor": null,
                     "language": null,
-                    "soundcloud_id": null,
-                    "soundcloud_error_code": null,
-                    "soundcloud_error_msg": null,
-                    "soundcloud_link_to_file": null,
-                    "soundcloud_upload_time": null,
                     "replay_gain": "-5.07",
                     "owner_id": 1,
                     "cuein": "00:00:00",
@@ -258,11 +249,6 @@ paths:
                     "subject": null,
                     "contributor": null,
                     "language": null,
-                    "soundcloud_id": null,
-                    "soundcloud_error_code": null,
-                    "soundcloud_error_msg": null,
-                    "soundcloud_link_to_file": null,
-                    "soundcloud_upload_time": null,
                     "replay_gain": "-8.57",
                     "owner_id": 1,
                     "cuein": "00:00:00",
@@ -414,11 +400,6 @@ paths:
                       "subject": null,
                       "contributor": null,
                       "language": null,
-                      "soundcloud_id": null,
-                      "soundcloud_error_code": null,
-                      "soundcloud_error_msg": null,
-                      "soundcloud_link_to_file": null,
-                      "soundcloud_upload_time": null,
                       "replay_gain": "-8.57",
                       "owner_id": 1,
                       "cuein": "00:00:00",
@@ -492,11 +473,6 @@ paths:
                       "subject": null,
                       "contributor": null,
                       "language": null,
-                      "soundcloud_id": null,
-                      "soundcloud_error_code": null,
-                      "soundcloud_error_msg": null,
-                      "soundcloud_link_to_file": null,
-                      "soundcloud_upload_time": null,
                       "replay_gain": "-1.2",
                       "owner_id": 1,
                       "cuein": "00:00:00",
@@ -807,8 +783,7 @@ paths:
                   "instance_description": "",
                   "created": "2019-10-21 17:20:22",
                   "last_scheduled": "2019-10-21 17:20:50",
-                  "time_filled": "01:14:39.265872",
-                  "soundcloud_id": null
+                  "time_filled": "01:14:39.265872"
                 }
               ]
   /show-logo:

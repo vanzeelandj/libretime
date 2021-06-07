@@ -12,14 +12,11 @@ define('COMPANY_SITE'       , 'libretime.org');
 define('COMPANY_SITE_URL'   , 'http://libretime.org');
 define('SUPPORT_ADDRESS'    , 'https://discourse.libretime.org/');
 
-define("AIRTIMEPRO_API_URL", "https://account.example.com:5001/api/");
-
 define('HELP_URL'                   , 'https://discourse.libretime.org/');
-define('FAQ_URL'                    , 'http://libretime.org/faq');
 define('WHOS_USING_URL'             , 'https://github.com/orgs/LibreTime/people');
 define('TERMS_AND_CONDITIONS_URL'   , 'https://github.com/LibreTime/libretime/blob/master/README.md');
 define('PRIVACY_POLICY_URL'         , 'https://github.com/LibreTime/code-of-conduct/blob/master/CODE_OF_CONDUCT.md');
-define('USER_MANUAL_URL'            , 'http://libretime.org/');
+define('USER_MANUAL_URL'            , 'http://libretime.org/docs');
 define('ABOUT_AIRTIME_URL'          , 'http://libretime.org');
 define('LIBRETIME_CONTRIBUTE_URL'   , 'https://libretime.org/contribute');
 define('LIBRETIME_DISCOURSE_URL'    , 'https://discourse.libretime.org');
@@ -115,18 +112,12 @@ define('SENTRY_CONFIG_PATH', LIBRETIME_CONF_DIR . '/sentry.airtime_web.ini');
 //TuneIn integration
 define("TUNEIN_API_URL", "http://air.radiotime.com/Playing.ashx");
 
-// SoundCloud
-define('SOUNDCLOUD', 'SoundCloud');
-define('DEFAULT_SOUNDCLOUD_LICENSE_TYPE', 'all-rights-reserved');
-define('DEFAULT_SOUNDCLOUD_SHARING_TYPE', 'public');
-
 // Celery
 define('CELERY_PENDING_STATUS', 'PENDING');
 define('CELERY_SUCCESS_STATUS', 'SUCCESS');
 define('CELERY_FAILED_STATUS', 'FAILED');
 
 // Celery Services
-define('SOUNDCLOUD_SERVICE_NAME', 'soundcloud');
 define('PODCAST_SERVICE_NAME', 'podcast');
 
 // Publish Services

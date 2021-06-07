@@ -7,7 +7,7 @@
  * Wrapper class for validating and installing the Airtime database during the installation process
  */
 class DatabaseSetup extends Setup {
-    
+
     // airtime.conf section header
     protected static $_section = "[database]";
 
@@ -80,6 +80,7 @@ class DatabaseSetup extends Setup {
         $this->checkSchemaExists();
         $this->createDatabaseTables();
         $this->updateIcecastPassword();
+        $this->updateDjangoTables();
     }
 
     /**
@@ -152,7 +153,7 @@ class DatabaseSetup extends Setup {
                  * have multiple issues; they similarly die on any SQL errors, fail to read in multi-line
                  * commands, and fail on any unescaped ? or $ characters.
                  */
-                exec("export PGPASSWORD=" . self::$_properties["dbpass"] . " && psql -U " . self::$_properties["dbuser"]
+                exec("export PGPASSWORD=" . self::$_properties["dbpass"] . " && /usr/bin/psql -U " . self::$_properties["dbuser"]
                      . " --dbname " . self::$_properties["dbname"] . " -h " . self::$_properties["host"]
                      . " -f $sqlDir$f 2>/dev/null", $out, $status);
             } catch (Exception $e) {
@@ -190,7 +191,7 @@ class DatabaseSetup extends Setup {
        $statement =  self::$dbh->prepare("UPDATE cc_stream_setting SET value = :icecastpass WHERE keyname = 's1_pass'");
        $statement->bindValue(':icecastpass', $icecast_pass, PDO::PARAM_STR);
        try {
-           $statement->execute(); 
+           $statement->execute();
            }
        catch (PDOException $ex) {
            print "Error!: " . $ex->getMessage() . "<br />";
@@ -198,7 +199,7 @@ class DatabaseSetup extends Setup {
        $statement =  self::$dbh->prepare("UPDATE cc_stream_setting SET value = :icecastpass WHERE keyname = 's1_admin_pass'");
        $statement->bindValue(':icecastpass', $icecast_pass, PDO::PARAM_STR);
        try {
-           $statement->execute(); 
+           $statement->execute();
            }
        catch (PDOException $ex) {
            print "Error!: " . $ex->getMessage() . "<br />";
@@ -206,7 +207,7 @@ class DatabaseSetup extends Setup {
        $statement =  self::$dbh->prepare("UPDATE cc_stream_setting SET value = :icecastpass WHERE keyname = 's2_pass'");
        $statement->bindValue(':icecastpass', $icecast_pass, PDO::PARAM_STR);
        try {
-           $statement->execute(); 
+           $statement->execute();
            }
        catch (PDOException $ex) {
            print "Error!: " . $ex->getMessage() . "<br />";
@@ -214,7 +215,7 @@ class DatabaseSetup extends Setup {
        $statement =  self::$dbh->prepare("UPDATE cc_stream_setting SET value = :icecastpass WHERE keyname = 's2_admin_pass'");
        $statement->bindValue(':icecastpass', $icecast_pass, PDO::PARAM_STR);
        try {
-           $statement->execute(); 
+           $statement->execute();
            }
        catch (PDOException $ex) {
            print "Error!: " . $ex->getMessage() . "<br />";
@@ -223,7 +224,7 @@ class DatabaseSetup extends Setup {
        $statement =  self::$dbh->prepare("UPDATE cc_stream_setting SET value = :icecastpass WHERE keyname = 's3_pass'");
        $statement->bindValue(':icecastpass', $icecast_pass, PDO::PARAM_STR);
        try {
-           $statement->execute(); 
+           $statement->execute();
            }
        catch (PDOException $ex) {
            print "Error!: " . $ex->getMessage() . "<br />";
@@ -231,7 +232,7 @@ class DatabaseSetup extends Setup {
        $statement =  self::$dbh->prepare("UPDATE cc_stream_setting SET value = :icecastpass WHERE keyname = 's3_admin_pass'");
        $statement->bindValue(':icecastpass', $icecast_pass, PDO::PARAM_STR);
        try {
-           $statement->execute(); 
+           $statement->execute();
            }
        catch (PDOException $ex) {
            print "Error!: " . $ex->getMessage() . "<br />";
@@ -239,7 +240,7 @@ class DatabaseSetup extends Setup {
        $statement =  self::$dbh->prepare("UPDATE cc_stream_setting SET value = :icecastpass WHERE keyname = 's1_admin_pass'");
        $statement->bindValue(':icecastpass', $icecast_pass, PDO::PARAM_STR);
        try {
-           $statement->execute(); 
+           $statement->execute();
            }
        catch (PDOException $ex) {
            print "Error!: " . $ex->getMessage() . "<br />";
@@ -247,11 +248,17 @@ class DatabaseSetup extends Setup {
        $statement =  self::$dbh->prepare("INSERT INTO cc_pref (keystr, valstr) VALUES ('default_icecast_password', :icecastpass )");
        $statement->bindValue(':icecastpass', $icecast_pass, PDO::PARAM_STR);
        try {
-           $statement->execute(); 
+           $statement->execute();
            }
        catch (PDOException $ex) {
            print "Error!: " . $ex->getMessage() . "<br />";
            }
     }
 
+    /**
+    * Updates the Django related tables for the API
+    */
+    private function updateDjangoTables() {
+        shell_exec('LIBRETIME_CONF_FILE=/etc/airtime/airtime.conf.temp libretime-api migrate');
+    }
 }

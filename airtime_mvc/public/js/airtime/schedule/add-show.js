@@ -4,6 +4,10 @@
 *
 */
 
+// Init Day.JS plugins
+dayjs.extend(window.dayjs_plugin_utc);
+dayjs.extend(window.dayjs_plugin_timezone);
+
 function openAddShowForm(nowOrFuture) {
      if($("#add-show-form").length == 1) {
         if( ($("#add-show-form").css('display')=='none')) {
@@ -63,7 +67,7 @@ function setupStartTimeWidgets() {
         var currentTimezone = $("#add_show_timezone").val();
 
         //Set the show start time to now (in the show timezone)
-        var now = moment(new Date()).tz(currentTimezone);
+        var now = dayjs(new Date()).tz(currentTimezone);
         $('#add_show_start_date').val(now.format('YYYY-MM-DD'));
         $('#add_show_start_time').val(now.format('HH:mm'));
 
@@ -483,7 +487,7 @@ function setAddShowEvents(form) {
     
     form.find(".show_autoplaylist_help_icon").qtip({
         content: {
-            text: $.i18n._("Autoloading playlists' contents are added to shows one hour before the show airs. <a target='_blank' href='http://libretime.org/manual/calendar/#autoloading-playlist'>More information</a>")
+            text: $.i18n._("Autoloading playlists' contents are added to shows one hour before the show airs. <a target='_blank' href='http://libretime.org/docs/playlists'>More information</a>")
         },
         hide: {
             delay: 500,
