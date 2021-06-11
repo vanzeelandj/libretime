@@ -19,13 +19,12 @@ setup(
         ]
     },
     install_requires=[
-        "mutagen==1.42.0",
-        "pika~=1.1.0",
+        "mutagen>=1.31.0",
+        "pika>=1.0.0",
         "file-magic",
         "requests>=2.7.0",
-        "rgain3==1.0.0",
+        "rgain3==1.1.0",
         "pycairo==1.19.1",
-        "PyGObject<=3.36.1",
     ],
     zip_safe=False,
 )
