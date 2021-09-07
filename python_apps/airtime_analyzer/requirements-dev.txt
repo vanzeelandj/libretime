@@ -1,4 +1,4 @@
-mock
+distro
 pylint
 pytest
 pytest-cov
