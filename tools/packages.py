@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 
-import json
-import sys
 from argparse import ArgumentParser
 from configparser import ConfigParser
-from os import PathLike
 from pathlib import Path
 from typing import Iterator, Set
 
 DEFAULT_PACKAGES_FILENAME = "packages.ini"
 FORMATS = ("list", "line")
-SYSTEMS = ("buster", "bionic")
+SYSTEMS = ("buster", "bullseye", "bionic", "focal")
 
 SETTINGS_SECTION = "=settings"
 DEVELOPMENT_SECTION = "=development"
@@ -62,7 +59,7 @@ def run():
         choices=FORMATS,
         help="print packages list in a specific format.",
         default="list",
-    ),
+    )
     parser.add_argument(
         "-d",
         "--dev",

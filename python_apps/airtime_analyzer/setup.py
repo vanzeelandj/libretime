@@ -23,6 +23,7 @@ setup(
             "libretime-analyzer=airtime_analyzer.cli:main",
         ]
     },
+    python_requires=">=3.6",
     install_requires=[
         "mutagen>=1.31.0",
         "pika>=1.0.0",
@@ -33,5 +34,10 @@ setup(
         # If this version is changed, it needs changing in the install script too
         "pycairo==1.19.1",
     ],
+    extras_require={
+        "dev": [
+            "distro",
+        ],
+    },
     zip_safe=False,
 )

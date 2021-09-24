@@ -20,13 +20,20 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     scripts=["bin/libretime-api"],
+    python_requires=">=3.6",
     install_requires=[
         "coreapi",
-        "Django~=3.0",
+        "django~=3.0",
         "djangorestframework",
         "django-url-filter",
         "markdown",
         "model_bakery",
-        "psycopg2",
+        "psycopg2",  # TODO: Move to prod requires
     ],
+    extras_require={
+        "prod": [],
+        "dev": [
+            "psycopg2-binary",
+        ],
+    },
 )
