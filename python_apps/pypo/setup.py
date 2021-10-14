@@ -1,12 +1,14 @@
-import os
+from os import chdir
+from pathlib import Path
 
 from setuptools import setup
 
 # Change directory since setuptools uses relative paths
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
+here = Path(__file__).parent
+chdir(here)
 
 setup(
-    name="airtime-playout",
+    name="libretime-playout",
     version="1.0",
     description="LibreTime Playout",
     author="LibreTime Contributors",
@@ -23,12 +25,13 @@ setup(
     ],
     package_data={"": ["**/*.liq", "*.cfg", "*.types"]},
     scripts=[
-        "bin/airtime-playout",
-        "bin/airtime-liquidsoap",
-        "bin/pyponotify",
+        "bin/libretime-playout",
+        "bin/libretime-liquidsoap",
+        "bin/libretime-playout-notify",
     ],
     python_requires=">=3.6",
     install_requires=[
+        f"libretime-api-client @ file://localhost/{here.parent}/api_clients#egg=libretime-api-client",
         "amqplib",
         "configobj",
         "defusedxml",

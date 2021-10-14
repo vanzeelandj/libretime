@@ -44,6 +44,18 @@ jobs:
       - run: make all
         working-directory: tools
 
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+      - name: Run php-cs-fixer
+        run: |
+          make php-cs-fixer
+        working-directory: legacy
+
   test-legacy:
     strategy:
       matrix:
@@ -89,7 +101,7 @@ jobs:
           sudo mkdir -p "$LIBRETIME_LOG_DIR"
           sudo chown runner:runner "$LIBRETIME_LOG_DIR"
           make test
-        working-directory: airtime_mvc
+        working-directory: legacy
 
   # Start lint the code without failing the entire workflow, should be merged
   # into 'test' when the entire matrix succeeds.
