@@ -20,6 +20,15 @@ updates:
   #     - docker
   #     - dependencies
 
+  # Maintain dependencies for legacy
+  - package-ecosystem: "composer"
+    directory: "/legacy"
+    schedule:
+      interval: "daily"
+    labels:
+      - php
+      - dependencies
+
   # Maintain dependencies for Python apps
   - package-ecosystem: "pip"
     directory: "/api"
@@ -30,7 +39,7 @@ updates:
       - dependencies
 
   - package-ecosystem: "pip"
-    directory: "/python_apps/airtime_analyzer"
+    directory: "/analyzer"
     schedule:
       interval: "daily"
     labels:
@@ -38,7 +47,7 @@ updates:
       - dependencies
 
   - package-ecosystem: "pip"
-    directory: "/python_apps/airtime-celery"
+    directory: "/worker"
     schedule:
       interval: "daily"
     labels:
@@ -46,7 +55,7 @@ updates:
       - dependencies
 
   - package-ecosystem: "pip"
-    directory: "/python_apps/api_clients"
+    directory: "/api_client"
     schedule:
       interval: "daily"
     labels:
@@ -54,7 +63,7 @@ updates:
       - dependencies
 
   - package-ecosystem: "pip"
-    directory: "/python_apps/pypo"
+    directory: "/playout"
     schedule:
       interval: "daily"
     labels:

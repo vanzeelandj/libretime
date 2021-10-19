@@ -7,5 +7,9 @@ PYLINT_ARG := libretimeapi
 MYPY_ARG := libretimeapi
 
 format: .format
-lint: .pylint .mypy
+lint: .format-check .pylint .mypy
 clean: .clean
+
+test: $(VENV)
+	source $(VENV)/bin/activate
+	LIBRETIME_DEBUG=True $(VENV)/bin/libretime-api test libretimeapi

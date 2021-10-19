@@ -7,11 +7,10 @@ $(PHP-CS-FIXER):
 	mkdir -p tools
 	composer require --working-dir=tools friendsofphp/php-cs-fixer
 
-include locale/Makefile
-
-locale-update: .locale-update
+locale-update:
+	$(MAKE) -C locale update
 locale-build:
-	$(MAKE) -C locale build
+	$(MAKE) -C locale clean build
 
 vendor:
 	composer install --no-progress --no-interaction $(COMPOSER_ARGS)
@@ -31,3 +30,8 @@ lint: $(PHP-CS-FIXER)
 .PHONY: build
 build:
 	COMPOSER_ARGS="--no-dev --ignore-platform-reqs" $(MAKE)
+
+propel-gen: vendor
+	cd build && \
+	../vendor/bin/propel-gen \
+		-Dproject.home="$(shell pwd)"
