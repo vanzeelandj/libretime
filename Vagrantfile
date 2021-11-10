@@ -85,9 +85,23 @@ Vagrant.configure('2') do |config|
   end
 
   # Define all the OS boxes we support
+  config.vm.define "ubuntu-focal" do |os|
+    os.vm.box = "bento/ubuntu-20.04"
+    setup_libretime(os, "debian.sh")
+  end
+
   config.vm.define 'ubuntu-bionic' do |os|
     os.vm.box = 'bento/ubuntu-18.04'
     setup_nfs(config)
+    setup_libretime(os, 'debian.sh')
+  end
+
+  config.vm.define 'debian-bullseye' do |os|
+    os.vm.box = 'debian/bullseye64'
+    config.vm.provider 'virtualbox' do |v, override|
+      override.vm.box = 'bento/debian-11'
+    end
+    setup_nfs(config, 4)
     setup_libretime(os, 'debian.sh')
   end
 
