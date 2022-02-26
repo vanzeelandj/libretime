@@ -1,9 +1,12 @@
-import os
+from os import chdir
+from pathlib import Path
 
 from setuptools import find_packages, setup
 
 # Change directory since setuptools uses relative paths
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
+here = Path(__file__).parent.resolve()
+chdir(here)
+
 
 setup(
     name="libretime-api",
@@ -22,7 +25,7 @@ setup(
     python_requires=">=3.6",
     entry_points={
         "console_scripts": [
-            "libretime-api=libretimeapi.cli:main",
+            "libretime-api=libretime_api.cli:main",
         ]
     },
     install_requires=[

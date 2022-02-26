@@ -1,4 +1,4 @@
-![](https://github.com/LibreTime/libretime/raw/master/logo/logotype.png)
+![](website/static/img/logo-512px.png)
 
 [![Tests](https://github.com/LibreTime/libretime/actions/workflows/test.yml/badge.svg)](https://github.com/LibreTime/libretime/actions/workflows/test.yml)
 [![Financial Contributors on Open Collective](https://opencollective.com/libretime/all/badge.svg?label=financial+contributors)](https://opencollective.com/libretime)
@@ -12,11 +12,11 @@ defining how we manage the codebase going forward.
 
 We are currently ramping up development on this repository.
 
-Check out the [documentation](http://libretime.org) for more information and
+Check out the [documentation](https://libretime.org) for more information and
 start broadcasting!
 
 Please note that LibreTime is released with a [Contributor Code
-of Conduct](https://github.com/LibreTime/code-of-conduct/blob/master/CODE_OF_CONDUCT.md).
+of Conduct](https://github.com/LibreTime/code-of-conduct/blob/main/CODE_OF_CONDUCT.md).
 By participating in this project you agree to abide by its terms.
 
 Please submit enhancements, bugfixes or comments via GitHub.
@@ -36,12 +36,12 @@ provided here.
 > and clear descriptions, use of "pull requests" and systematic reviews.
 
 The full text of the contract is licensed under the GPL and available at
-the above link courtesy of the [ZeroMQ community](http://zeromq.org/).
+the above link courtesy of the [ZeroMQ community](https://zeromq.org/).
 
 ## Releasing
 
 The LibreTime maintainers release new versions of LibreTime at regular
-intervals. We follow the [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
+intervals. We follow the [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 standards.
 
 In a nutshell, given a version number MAJOR.MINOR.PATCH we increment the:
@@ -58,7 +58,7 @@ up and running.
 ## Support
 
 To get support for any questions or problems you might have using the software
-we have a forum at [discourse.libretime.org](http://discourse.libretime.org).
+we have a forum at [discourse.libretime.org](https://discourse.libretime.org).
 We are moving towards using the forum to provide community support and reserving
 the github issue queue for confirmed bugs and well-formed feature requests.
 
@@ -91,10 +91,6 @@ your organization. Your logo will show up here with a link to your website.
 <a href="https://opencollective.com/libretime/organization/3/website"><img src="https://opencollective.com/libretime/organization/3/avatar.svg"></a>
 <a href="https://opencollective.com/libretime/organization/4/website"><img src="https://opencollective.com/libretime/organization/4/avatar.svg"></a>
 <a href="https://opencollective.com/libretime/organization/5/website"><img src="https://opencollective.com/libretime/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/libretime/organization/6/website"><img src="https://opencollective.com/libretime/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/libretime/organization/7/website"><img src="https://opencollective.com/libretime/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/libretime/organization/8/website"><img src="https://opencollective.com/libretime/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/libretime/organization/9/website"><img src="https://opencollective.com/libretime/organization/9/avatar.svg"></a>
 
 ## License
 

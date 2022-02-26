@@ -56,8 +56,7 @@ class Rest_ShowImageController extends Zend_Rest_Controller
         if (!$showId) {
             $this->getResponse()
                 ->setHttpResponseCode(400)
-                ->appendBody('No show ID provided')
-            ;
+                ->appendBody('No show ID provided');
 
             return;
         }
@@ -67,8 +66,7 @@ class Rest_ShowImageController extends Zend_Rest_Controller
         } catch (Exception $e) {
             $this->getResponse()
                 ->setHttpResponseCode(500)
-                ->appendBody('Error processing image: ' . $e->getMessage())
-            ;
+                ->appendBody('Error processing image: ' . $e->getMessage());
 
             return;
         }
@@ -88,13 +86,11 @@ class Rest_ShowImageController extends Zend_Rest_Controller
             $con->rollBack();
             $this->getResponse()
                 ->setHttpResponseCode(500)
-                ->appendBody("Couldn't add show image: " . $e->getMessage())
-            ;
+                ->appendBody("Couldn't add show image: " . $e->getMessage());
         }
 
         $this->getResponse()
-            ->setHttpResponseCode(201)
-        ;
+            ->setHttpResponseCode(201);
     }
 
     /**
@@ -107,8 +103,7 @@ class Rest_ShowImageController extends Zend_Rest_Controller
         if (!$showId) {
             $this->getResponse()
                 ->setHttpResponseCode(400)
-                ->appendBody('No show ID provided')
-            ;
+                ->appendBody('No show ID provided');
 
             return;
         }
@@ -118,8 +113,7 @@ class Rest_ShowImageController extends Zend_Rest_Controller
         } catch (Exception $e) {
             $this->getResponse()
                 ->setHttpResponseCode(500)
-                ->appendBody('Error processing image: ' . $e->getMessage())
-            ;
+                ->appendBody('Error processing image: ' . $e->getMessage());
         }
 
         $show = CcShowQuery::create()->findPk($showId);
@@ -137,13 +131,11 @@ class Rest_ShowImageController extends Zend_Rest_Controller
             $con->rollBack();
             $this->getResponse()
                 ->setHttpResponseCode(500)
-                ->appendBody("Couldn't remove show image: " . $e->getMessage())
-            ;
+                ->appendBody("Couldn't remove show image: " . $e->getMessage());
         }
 
         $this->getResponse()
-            ->setHttpResponseCode(201)
-        ;
+            ->setHttpResponseCode(201);
     }
 
     /**
@@ -322,6 +314,16 @@ class Rest_ShowImageController extends Zend_Rest_Controller
             $resp = $this->getResponse();
             $resp->setHttpResponseCode(400);
             $resp->appendBody('ERROR: No show ID specified.');
+
+            return false;
+        }
+
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+
+        if ($id === false) {
+            $resp = $this->getResponse();
+            $resp->setHttpResponseCode(400);
+            $resp->appendBody('ERROR: Invalid show ID specified.');
 
             return false;
         }

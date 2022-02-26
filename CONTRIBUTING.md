@@ -4,7 +4,7 @@ First and foremost, thank you! We appreciate that you want to contribute to
 LibreTime, your time is valuable, and your contributions mean a lot to us.
 
 Before any contribution, read and be prepared to adhere to our
-[code of conduct](https://github.com/libretime/code-of-conduct/blob/master/code_of_conduct.md).
+[code of conduct](https://github.com/libretime/code-of-conduct/blob/main/code_of_conduct.md).
 
 In addition, LibreTime follow the standardized
 [C4 development process](https://rfc.zeromq.org/spec:42/c4/), in which you can
@@ -109,7 +109,7 @@ and a more persistent install.
 ## Modifying the Database
 
 LibreTime is designed to work with a [PostgreSQL](https://www.postgresql.org/)
-database server running locally. LibreTime uses [PropelORM](http://propelorm.org)
+database server running locally. LibreTime uses [PropelORM](https://github.com/propelorm/Propel)
 to interact with the ZendPHP components and create the database. The version 2
 API uses Django to interact with the same database.
 
@@ -119,7 +119,7 @@ If you are a developer seeking to add new columns to the database here are the s
 2. Run `dev_tools/propel_generate.sh`
 3. Update the upgrade.sql under `legacy/application/controllers/upgrade_sql/VERSION` for example
    `ALTER TABLE imported_podcast ADD COLUMN album_override boolean default 'f' NOT NULL;`
-4. Update the models under `api/libretimeapi/models/` to reflect the new
+4. Update the models under `api/libretime_api/models/` to reflect the new
    changes.
 
 ## Documentation and financial contributions

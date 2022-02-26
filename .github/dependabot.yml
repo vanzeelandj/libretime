@@ -6,8 +6,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    commit-message:
-      prefix: "chore: "
     labels:
       - ci
       - dependencies
@@ -18,8 +16,6 @@ updates:
   #   directory: "/docker"
   #   schedule:
   #     interval: "weekly"
-  #   commit-message:
-  #     prefix: "chore: "
   #   labels:
   #     - docker
   #     - dependencies
@@ -29,39 +25,23 @@ updates:
     directory: "/legacy"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "chore: "
     labels:
       - php
       - dependencies
 
   # Maintain dependencies for Python apps
   - package-ecosystem: "pip"
-    directory: "/api"
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "chore: "
-    labels:
-      - python
-      - dependencies
-
-  - package-ecosystem: "pip"
     directory: "/analyzer"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "chore: "
     labels:
       - python
       - dependencies
 
   - package-ecosystem: "pip"
-    directory: "/worker"
+    directory: "/api"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "chore: "
     labels:
       - python
       - dependencies
@@ -70,8 +50,6 @@ updates:
     directory: "/api_client"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "chore: "
     labels:
       - python
       - dependencies
@@ -80,20 +58,39 @@ updates:
     directory: "/playout"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "chore: "
     labels:
       - python
       - dependencies
 
-  # TODO: Enable when the future UI lands in the repository
+  - package-ecosystem: "pip"
+    directory: "/shared"
+    schedule:
+      interval: "daily"
+    labels:
+      - python
+      - dependencies
+
+  - package-ecosystem: "pip"
+    directory: "/worker"
+    schedule:
+      interval: "daily"
+    labels:
+      - python
+      - dependencies
+
   # Maintain dependencies for NPM packages
   # - package-ecosystem: "npm"
   #   directory: "/ui"
   #   schedule:
   #     interval: "daily"
-  #   commit-message:
-  #     prefix: "chore: "
   #   labels:
   #     - javascript
   #     - dependencies
+
+  - package-ecosystem: "npm"
+    directory: "/website"
+    schedule:
+      interval: "daily"
+    labels:
+      - javascript
+      - dependencies

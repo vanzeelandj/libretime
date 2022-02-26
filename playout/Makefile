@@ -2,10 +2,11 @@ all: lint
 
 include ../tools/python.mk
 
-PIP_INSTALL := --editable .
-PYLINT_ARG := liquidsoap pypo
-MYPY_ARG := liquidsoap pypo
+PIP_INSTALL := --editable .[dev]
+PYLINT_ARG := libretime_liquidsoap libretime_playout || true
+MYPY_ARG := libretime_liquidsoap libretime_playout || true
+BANDIT_ARG := libretime_liquidsoap libretime_playout || true
 
 format: .format
-lint: .format-check .pylint .mypy
+lint: .format-check .pylint .mypy .bandit
 clean: .clean

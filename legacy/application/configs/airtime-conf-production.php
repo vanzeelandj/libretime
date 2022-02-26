@@ -5,13 +5,14 @@
 
 /* The original name of this file is airtime-conf.php but since we need to make custom changes
  * to it I've renamed it so that our changes aren't removed everytime we regenerate a database schema.
- * our custom changes requires the database parameters to be loaded from /etc/airtime/airtime.conf so
+ * our custom changes requires the database parameters to be loaded from the config file so
  * that the user can customize these.
  */
 
 $CC_CONFIG = Config::getConfig();
 
-$dbhost = $CC_CONFIG['dsn']['hostspec'];
+$dbhost = $CC_CONFIG['dsn']['host'];
+$dbport = $CC_CONFIG['dsn']['port'];
 $dbname = $CC_CONFIG['dsn']['database'];
 $dbuser = $CC_CONFIG['dsn']['username'];
 $dbpass = $CC_CONFIG['dsn']['password'];
@@ -21,7 +22,7 @@ $conf = [
         'airtime' => [
             'adapter' => 'pgsql',
             'connection' => [
-                'dsn' => "pgsql:host={$dbhost};port=5432;dbname={$dbname};user={$dbuser};password={$dbpass}",
+                'dsn' => "pgsql:host={$dbhost};port={$dbport};dbname={$dbname};user={$dbuser};password={$dbpass}",
             ],
         ],
         'default' => 'airtime',

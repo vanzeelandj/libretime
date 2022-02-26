@@ -93,6 +93,12 @@ skip_postgres=0
 skip_rabbitmq=0
 default_value="Y"
 
+# <user:group> <path>
+mkdir_and_chown() {
+  mkdir -p "$2"
+  chown -R "$1" "$2"
+}
+
 function verbose() {
   if [[ ${_v} -eq 1 ]]; then
     echo -e "$@"
@@ -671,6 +677,7 @@ case "${dist}-${code}" in
     ;;
   ubuntu-18.04)
     code="bionic"
+    # shellcheck disable=SC2034
     is_ubuntu_dist=true
     is_ubuntu_bionic=true
     ;;
@@ -762,10 +769,6 @@ if [ "$ignore_dependencies" = "f" ]; then
   loud "\n-----------------------------------------------------"
   loud "         * Installing External Dependencies *        "
   loud "-----------------------------------------------------"
-
-  if $is_ubuntu_dist; then
-    loudCmd "add-apt-repository -y ppa:libretime/libretime"
-  fi
 
   if [ -x /usr/bin/apt-get ]; then
     verbose "\n * Reading packages.ini files..."
@@ -1009,15 +1012,14 @@ loud "\n-----------------------------------------------------"
 loud "          * Installing Airtime Services *            "
 loud "-----------------------------------------------------"
 
+LIBRETIME_WORKING_DIR="/var/lib/libretime"
+
 python_version=$($python_bin --version 2>&1 | awk '{ print $2 }')
 verbose "Detected Python version: $python_version"
 pip_cmd="$python_bin -m pip"
 
 verbose "\n * Installing necessary python services..."
 loudCmd "$pip_cmd install --upgrade setuptools~=58.0"
-# Required here because PyGObject requires it, but it is installed after PyGObject
-# when pip parses the setup.py file in analyzer
-loudCmd "$pip_cmd install pycairo==1.19.1"
 verbose "...Done"
 
 if [ ! -d /var/log/airtime ]; then
@@ -1027,11 +1029,16 @@ if [ ! -d /var/log/airtime ]; then
 
   verbose "\n * Creating /var/log/airtime"
   loudCmd "mkdir -p /var/log/airtime"
+  mkdir_and_chown "$web_user:$web_user" "/var/log/libretime"
 
   verbose "\n * Copying logrotate files..."
   loudCmd "cp ${AIRTIMEROOT}/legacy/build/airtime-php.logrotate /etc/logrotate.d/airtime-php"
-  loudCmd "cp ${AIRTIMEROOT}/playout/liquidsoap/logrotate.conf /etc/logrotate.d/libretime-liquidsoap"
+  loudCmd "cp ${AIRTIMEROOT}/playout/install/logrotate/libretime-liquidsoap.conf /etc/logrotate.d/libretime-liquidsoap"
 fi
+
+verbose "\n * Installing Shared..."
+loudCmd "$pip_cmd install ${AIRTIMEROOT}/shared"
+verbose "...Done"
 
 verbose "\n * Installing API client..."
 loudCmd "$pip_cmd install ${AIRTIMEROOT}/api_client"
@@ -1039,6 +1046,7 @@ verbose "...Done"
 
 verbose "\n * Installing playout and liquidsoap..."
 loudCmd "$pip_cmd install ${AIRTIMEROOT}/playout"
+mkdir_and_chown "${web_user}:${web_user}" "${LIBRETIME_WORKING_DIR}/playout"
 loudCmd "mkdir -p /var/log/airtime/{pypo,pypo-liquidsoap} /var/tmp/airtime/pypo/{cache,files,tmp} /var/tmp/airtime/show-recorder/"
 loudCmd "chown -R ${web_user}:${web_user} /var/log/airtime/{pypo,pypo-liquidsoap} /var/tmp/airtime/pypo/{cache,files,tmp} /var/tmp/airtime/show-recorder/"
 systemInitInstall libretime-liquidsoap "$web_user"
@@ -1047,6 +1055,7 @@ verbose "...Done"
 
 verbose "\n * Installing celery..."
 loudCmd "$pip_cmd install ${AIRTIMEROOT}/worker"
+mkdir_and_chown "${web_user}:${web_user}" "${LIBRETIME_WORKING_DIR}/worker"
 # Create the Celery user
 if $is_centos_dist; then
   loudCmd "id celery 2>/dev/null || adduser --no-create-home -c 'LibreTime Celery' -r celery || true"
@@ -1058,11 +1067,12 @@ loudCmd "usermod -G ${web_user} -a celery"
 # CentOS installs celery in /usr/bin which differs from other distros. Make
 # available in /usr/local/bin as systemd requires an absolute path.
 [[ ! -e /usr/local/bin/celery ]] && ln -s /usr/bin/celery /usr/local/bin/celery
-systemInitInstall libretime-celery
+systemInitInstall libretime-celery celery
 verbose "...Done"
 
 verbose "\n * Installing libretime-analyzer..."
 loudCmd "$pip_cmd install ${AIRTIMEROOT}/analyzer"
+mkdir_and_chown "${web_user}:${web_user}" "${LIBRETIME_WORKING_DIR}/analyzer"
 systemInitInstall libretime-analyzer "$web_user"
 verbose "...Done"
 
@@ -1220,37 +1230,6 @@ if [ ! -d "/srv/airtime" ]; then
   mkdir -p /srv/airtime
 fi
 chown -R ${web_user}:${web_user} /srv/airtime
-
-# We only generate the locales for Airtime if you're allowing us
-# to install our dependencies, so that we won't automatically do this
-# when this install script runs from our DEB package.
-if [ "$ignore_dependencies" = "f" ]; then
-  loud "\n-----------------------------------------------------"
-  loud "                * Installing Locales *               "
-  loud "-----------------------------------------------------"
-
-  if $is_centos_dist; then
-    loud "\n not required on $dist"
-  else
-    set +e
-    verbose "\n * Generating locales"
-    for locale_file in "${web_root}"/../locale/*_*; do
-      locale=$(basename "$locale_file")
-      if [ "$dist" = "debian" ]; then
-        if ! grep -qi "^$locale" /etc/locale.gen; then
-          verbose "$locale.UTF-8 UTF-8" >> /etc/locale.gen
-        fi
-      else
-        loudCmd "locale-gen \"$locale.utf8\""
-      fi
-    done
-    set -e
-  fi
-
-  if [ "$dist" = "debian" ]; then
-    loudCmd "/usr/sbin/locale-gen"
-  fi
-fi
 
 # If the user requested it we run restorecon on files that need
 # tagging for selinux.

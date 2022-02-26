@@ -1,9 +1,11 @@
-import os
+from os import chdir
+from pathlib import Path
 
 from setuptools import setup
 
 # Change directory since setuptools uses relative paths
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
+here = Path(__file__).parent.resolve()
+chdir(here)
 
 setup(
     name="libretime-analyzer",
@@ -17,26 +19,26 @@ setup(
         "Source Code": "https://github.com/libretime/libretime",
     },
     license="AGPLv3",
-    packages=["airtime_analyzer"],
+    packages=[
+        "libretime_analyzer",
+        "libretime_analyzer.pipeline",
+    ],
     entry_points={
         "console_scripts": [
-            "libretime-analyzer=airtime_analyzer.cli:main",
+            "libretime-analyzer=libretime_analyzer.main:cli",
         ]
     },
     python_requires=">=3.6",
     install_requires=[
-        "mutagen>=1.31.0",
+        "mutagen>=1.45.1",
         "pika>=1.0.0",
-        "file-magic",
         "requests>=2.7.0",
-        "rgain3==1.1.1",
-        "PyGObject>=3.34.0",
-        # If this version is changed, it needs changing in the install script too
-        "pycairo==1.19.1",
+        "typing_extensions",
     ],
     extras_require={
         "dev": [
             "distro",
+            f"libretime-shared @ file://localhost{here.parent / 'shared'}",
         ],
     },
     zip_safe=False,

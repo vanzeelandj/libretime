@@ -2,10 +2,14 @@ name: Tests
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
     types: [opened, reopened, synchronize, edited]
-    branches: [master]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   pre-commit:
@@ -68,7 +72,6 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     env:
       ENVIRONMENT: testing
-      LIBRETIME_LOG_DIR: /tmp/log/libretime
     steps:
       - uses: actions/checkout@v2
 
@@ -99,10 +102,7 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Run tests
-        run: |
-          sudo mkdir -p "$LIBRETIME_LOG_DIR"
-          sudo chown runner:runner "$LIBRETIME_LOG_DIR"
-          make test
+        run: make test
         working-directory: legacy
 
   # Start lint the code without failing the entire workflow, should be merged
@@ -117,6 +117,7 @@ jobs:
           - api
           - api_client
           - playout
+          - shared
           - worker
 
     container: ghcr.io/libretime/libretime-dev:buster
@@ -148,6 +149,7 @@ jobs:
         context:
           - analyzer
           - api_client
+          - shared
         release:
           - buster
           - bullseye
@@ -202,7 +204,7 @@ jobs:
       run:
         shell: bash
     env:
-      LIBRETIME_CONF_FILE: /tmp/libretime-test.conf
+      LIBRETIME_CONFIG_FILEPATH: /tmp/libretime-test.conf
 
     steps:
       - uses: actions/checkout@v2
@@ -216,16 +218,17 @@ jobs:
 
       - name: Setup libretime configuration
         run: |
-          cat <<EOF > $LIBRETIME_CONF_FILE
+          cat <<EOF > $LIBRETIME_CONFIG_FILEPATH
           [general]
           api_key = test_key
           [database]
           host = postgres
-          dbname = libretime
-          dbuser = postgres
-          dbpass = libretime
+          port = 5432
+          name = libretime
+          user = postgres
+          password = libretime
           EOF
-          cat $LIBRETIME_CONF_FILE
+          cat $LIBRETIME_CONFIG_FILEPATH
 
       - name: Test
         run: make test

@@ -76,8 +76,7 @@ class ApiController extends Zend_Controller_Action
             ->addActionContext('get-usability-hint', 'json')
             ->addActionContext('poll-celery', 'json')
             ->addActionContext('recalculate-schedule', 'json') //RKTN-260
-            ->initContext()
-        ;
+            ->initContext();
     }
 
     public function checkAuth()
@@ -304,24 +303,43 @@ class ApiController extends Zend_Controller_Action
                 $result = Application_Model_Schedule::GetPlayOrderRangeOld($limit);
             }
 
+            if (!isset($result)) {
+                $this->returnJsonOrJsonp($request, []);
+            }
+
             $stationUrl = Application_Common_HTTPHelper::getStationUrl();
 
-            if (($result['previous']['type'] != 'livestream') && isset($result['previous']['metadata'])) {
-                $previousID = $result['previous']['metadata']['id'];
-                $get_prev_artwork_url = $stationUrl . 'api/track?id=' . $previousID . '&return=artwork';
-                $result['previous']['metadata']['artwork_url'] = $get_prev_artwork_url;
+            if (isset($result['previous'])) {
+                if (
+                    (isset($result['previous']['type']) && $result['previous']['type'] != 'livestream')
+                    && isset($result['previous']['metadata'])
+                ) {
+                    $previousID = $result['previous']['metadata']['id'];
+                    $get_prev_artwork_url = $stationUrl . 'api/track?id=' . $previousID . '&return=artwork';
+                    $result['previous']['metadata']['artwork_url'] = $get_prev_artwork_url;
+                }
             }
 
-            if (($result['current']['type'] != 'livestream') && isset($result['current']['metadata'])) {
-                $currID = $result['current']['metadata']['id'];
-                $get_curr_artwork_url = $stationUrl . 'api/track?id=' . $currID . '&return=artwork';
-                $result['current']['metadata']['artwork_url'] = $get_curr_artwork_url;
+            if (isset($result['current'])) {
+                if (
+                    (isset($result['current']['type']) & $result['current']['type'] != 'livestream')
+                    && isset($result['current']['metadata'])
+                ) {
+                    $currID = $result['current']['metadata']['id'];
+                    $get_curr_artwork_url = $stationUrl . 'api/track?id=' . $currID . '&return=artwork';
+                    $result['current']['metadata']['artwork_url'] = $get_curr_artwork_url;
+                }
             }
 
-            if (($result['next']['type'] != 'livestream') && isset($result['next']['metadata'])) {
-                $nextID = $result['next']['metadata']['id'];
-                $get_next_artwork_url = $stationUrl . 'api/track?id=' . $nextID . '&return=artwork';
-                $result['next']['metadata']['artwork_url'] = $get_next_artwork_url;
+            if (isset($result['next'])) {
+                if (
+                    (isset($result['next']['type']) && $result['next']['type'] != 'livestream')
+                    && isset($result['next']['metadata'])
+                ) {
+                    $nextID = $result['next']['metadata']['id'];
+                    $get_next_artwork_url = $stationUrl . 'api/track?id=' . $nextID . '&return=artwork';
+                    $result['next']['metadata']['artwork_url'] = $get_next_artwork_url;
+                }
             }
 
             // apply user-defined timezone, or default to station
@@ -1412,8 +1430,7 @@ class ApiController extends Zend_Controller_Action
                 $previous_metadata = CcWebstreamMetadataQuery::create()
                     ->orderByDbStartTime('desc')
                     ->filterByDbInstanceId($media_id)
-                    ->findOne()
-                ;
+                    ->findOne();
 
                 $do_insert = true;
                 if ($previous_metadata) {
@@ -1723,8 +1740,7 @@ class ApiController extends Zend_Controller_Action
             ->filterByDbStarts($now, Criteria::GREATER_THAN)
             //->filterByDbModifiedInstance(false)
             ->orderByDbStarts()
-            ->find()
-        ;
+            ->find();
         //->find($this->con);
         $total = $showInstances->count();
         $progress = 0;
@@ -1771,7 +1787,6 @@ class ApiController extends Zend_Controller_Action
         $this->getResponse()
             ->setHttpResponseCode($status)
             ->setHeader('Content-Type', 'application/json')
-            ->setBody(json_encode(['error' => $message]))
-        ;
+            ->setBody(json_encode(['error' => $message]));
     }
 }

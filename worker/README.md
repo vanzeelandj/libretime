@@ -1,6 +1,6 @@
 # airtime-celery
 
-airtime-celery is a [Celery](http://www.celeryproject.org/) daemon for handling backend tasks asynchronously. Communication and the Celery results backend are both handled with amqp (RabbitMQ).
+airtime-celery is a [Celery](https://docs.celeryproject.org/) daemon for handling backend tasks asynchronously. Communication and the Celery results backend are both handled with amqp (RabbitMQ).
 
 # Installation
 
@@ -8,14 +8,14 @@ airtime-celery is a [Celery](http://www.celeryproject.org/) daemon for handling 
 sudo python3 setup.py install
 ```
 
-Each instance of airtime-celery has its own worker, and multiple instances can be run in parallel. [Celery is thread-safe](http://celery.readthedocs.org/en/latest/userguide/application.html), so this parallelization won't cause conflicts.
+Each instance of airtime-celery has its own worker, and multiple instances can be run in parallel. [Celery is thread-safe](https://docs.celeryproject.org/en/latest/userguide/application.html), so this parallelization won't cause conflicts.
 
 # Developers
 
 To debug, you can run celery directly from the command line:
 
 ```sh
-RMQ_CONFIG_FILE=${LIBRETIME_CONF_DIR}/airtime.conf celery -A airtime-celery.tasks worker --loglevel=info
+RMQ_CONFIG_FILE=${LIBRETIME_CONF_DIR}/airtime.conf celery -A libretime_worker.tasks worker --loglevel=info
 ```
 
 This worker can be run alongside the service without issue.

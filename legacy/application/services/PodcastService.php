@@ -236,8 +236,7 @@ class Application_Service_PodcastService
             $defaultOwner = CcSubjsQuery::create()
                 ->filterByDbType('A')
                 ->orderByDbId()
-                ->findOne()
-            ;
+                ->findOne();
             if (!$defaultOwner) {
                 // what to do if there is no admin user?
                 // should we handle this case?
@@ -253,7 +252,7 @@ class Application_Service_PodcastService
     /**
      * Trims the podcast metadata to fit the table's column max size.
      *
-     * @param $podcastArray
+     * @param PodcastArray &$podcastArray
      */
     private static function validatePodcastMetadata(&$podcastArray)
     {

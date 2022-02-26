@@ -8,8 +8,7 @@ class TestHelper
 
         //pass to the adapter the submitted username and password
         $authAdapter->setIdentity('admin')
-            ->setCredential('admin')
-        ;
+            ->setCredential('admin');
 
         $auth = Zend_Auth::getInstance();
         $result = $auth->authenticate($authAdapter);
@@ -29,7 +28,8 @@ class TestHelper
 
         return new Zend_Config(
             [
-                'host' => $config['dsn']['hostspec'],
+                'host' => $config['dsn']['host'],
+                'port' => $config['dsn']['port'],
                 'dbname' => $config['dsn']['database'],
                 'username' => $config['dsn']['username'],
                 'password' => $config['dsn']['password'],
@@ -43,10 +43,11 @@ class TestHelper
         //is normally
         $CC_CONFIG = Config::getConfig();
 
+        $dbhost = $CC_CONFIG['dsn']['host'];
+        $dbport = $CC_CONFIG['dsn']['port'];
+        $dbname = $CC_CONFIG['dsn']['database'];
         $dbuser = $CC_CONFIG['dsn']['username'];
         $dbpasswd = $CC_CONFIG['dsn']['password'];
-        $dbname = $CC_CONFIG['dsn']['database'];
-        $dbhost = $CC_CONFIG['dsn']['hostspec'];
 
         $databaseAlreadyExists = AirtimeInstall::createDatabase();
         if ($databaseAlreadyExists) {
@@ -124,14 +125,14 @@ class TestHelper
             $con->commit();
         } else {
             //Create all the database tables
-            AirtimeInstall::CreateDatabaseTables($dbuser, $dbpasswd, $dbname, $dbhost);
+            AirtimeInstall::CreateDatabaseTables($dbuser, $dbpasswd, $dbname, $dbhost, $dbport);
             AirtimeInstall::UpdateDatabaseTables();
         }
     }
 
     public static function setupZendBootstrap()
     {
-        $application = new Zend_Application(APPLICATION_ENV, CONFIG_PATH . 'application.ini');
+        $application = new Zend_Application(APPLICATION_ENV, CONFIG_PATH . '/application.ini');
         $application->bootstrap();
 
         return $application;

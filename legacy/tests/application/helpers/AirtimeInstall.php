@@ -143,41 +143,6 @@ class AirtimeInstall
         return true;
     }
 
-    /* TODO: This function should be moved to the media-monitor
-     * install script. */
-    public static function InstallStorageDirectory()
-    {
-        $CC_CONFIG = Config::getConfig();
-        echo '* Storage directory setup' . PHP_EOL;
-        $ini = parse_ini_file(__DIR__ . '/airtime-install.ini');
-        $stor_dir = $ini['storage_dir'];
-        $dirs = [$stor_dir, $stor_dir . '/organize'];
-        foreach ($dirs as $dir) {
-            if (!file_exists($dir)) {
-                if (mkdir($dir, 02775, true)) {
-                    $rp = realpath($dir);
-                    echo "* Directory {$rp} created" . PHP_EOL;
-                } else {
-                    echo "* Failed creating {$dir}" . PHP_EOL;
-
-                    exit(1);
-                }
-            } elseif (is_writable($dir)) {
-                $rp = realpath($dir);
-                echo "* Skipping directory already exists: {$rp}" . PHP_EOL;
-            } else {
-                $rp = realpath($dir);
-                echo "* Error: Directory already exists, but is not writable: {$rp}" . PHP_EOL;
-
-                exit(1);
-            }
-            echo "* Giving Apache permission to access {$rp}" . PHP_EOL;
-            $success = chown($rp, $CC_CONFIG['webServerUser']);
-            $success = chgrp($rp, $CC_CONFIG['webServerUser']);
-            $success = chmod($rp, 0775);
-        }
-    }
-
     public static function CreateDatabaseUser()
     {
         $CC_CONFIG = Config::getConfig();
@@ -201,17 +166,18 @@ class AirtimeInstall
     public static function CreateDatabase()
     {
         $CC_CONFIG = Config::getConfig();
+        $host = $CC_CONFIG['dsn']['host'];
+        $port = $CC_CONFIG['dsn']['port'];
         $database = $CC_CONFIG['dsn']['database'];
         $username = $CC_CONFIG['dsn']['username'];
         $password = $CC_CONFIG['dsn']['password'];
-        $hostspec = $CC_CONFIG['dsn']['hostspec'];
 
         echo ' * Creating Airtime database: ' . $database . PHP_EOL;
 
         $dbExists = false;
 
         try {
-            $con = pg_connect('user=' . $username . ' password=' . $password . ' host=' . $hostspec);
+            $con = pg_connect("host={$host} port={$port} user={$username} password={$password}");
 
             pg_query($con, 'CREATE DATABASE ' . $database . ' WITH ENCODING \'UTF8\' TEMPLATE template0 OWNER ' . $username . ';');
         } catch (Exception $e) {
@@ -245,7 +211,7 @@ class AirtimeInstall
         }
     }
 
-    public static function CreateDatabaseTables($p_dbuser, $p_dbpasswd, $p_dbname, $p_dbhost)
+    public static function CreateDatabaseTables($dbuser, $dbpasswd, $dbname, $dbhost, $dbport)
     {
         echo ' * Creating database tables' . PHP_EOL;
         // Put Propel sql files in Database
@@ -253,7 +219,15 @@ class AirtimeInstall
         $dir = self::GetAirtimeSrcDir() . '/build/sql/';
         $files = ['schema.sql', 'sequences.sql', 'views.sql', 'triggers.sql', 'defaultdata.sql'];
         foreach ($files as $f) {
-            $command = "export PGPASSWORD={$p_dbpasswd} && /usr/bin/psql --username {$p_dbuser} --dbname {$p_dbname} --host {$p_dbhost} --file {$dir}{$f} 2>&1";
+            $command = <<<"END"
+PGPASSWORD={$dbpasswd} \\
+/usr/bin/psql \\
+    --host={$dbhost} \\
+    --port={$dbport} \\
+    --dbname={$dbname} \\
+    --username={$dbuser} \\
+    --file {$dir}{$f} 2>&1
+END;
             @exec($command, $output, $results);
         }
         AirtimeInstall::$databaseTablesCreated = true;
@@ -308,7 +282,8 @@ class AirtimeInstall
     public static function DirCheck()
     {
         echo 'Legend: "+" means the dir/file exists, "-" means that it does not.' . PHP_EOL;
-        $dirs = [AirtimeInstall::CONF_DIR_BINARIES,
+        $dirs = [
+            AirtimeInstall::CONF_DIR_BINARIES,
             AirtimeInstall::CONF_DIR_WWW,
             AirtimeIni::CONF_FILE_AIRTIME,
             AirtimeIni::CONF_FILE_LIQUIDSOAP,
@@ -317,7 +292,8 @@ class AirtimeInstall
             '/usr/lib/airtime/pypo',
             '/var/log/airtime',
             '/var/log/airtime/pypo',
-            '/var/tmp/airtime/pypo', ];
+            '/var/tmp/airtime/pypo',
+        ];
         foreach ($dirs as $f) {
             if (file_exists($f)) {
                 echo "+ {$f}" . PHP_EOL;
@@ -331,7 +307,7 @@ class AirtimeInstall
     {
         $CC_CONFIG = Config::getConfig();
         $path = AirtimeInstall::CONF_DIR_LOG;
-        $file = $path . '/zendphp.log';
+        $file = $path . '/legacy.log';
         if (!file_exists($path)) {
             mkdir($path, 0755, true);
         }
