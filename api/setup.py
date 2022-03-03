@@ -35,14 +35,15 @@ setup(
         "django-filter",
         "drf-spectacular",
         "markdown",
-        "model_bakery",
     ],
     extras_require={
         "prod": [
             "psycopg2",
         ],
         "dev": [
+            "model_bakery",
             "psycopg2-binary",
+            f"libretime-shared @ file://localhost/{here.parent / 'shared'}#egg=libretime_shared",
         ],
     },
 )
