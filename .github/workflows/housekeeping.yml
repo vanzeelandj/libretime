@@ -12,12 +12,12 @@ on:
 
 jobs:
   find_closed_references:
-    if: github.repository_owner == 'LibreTime'
+    if: github.repository_owner == 'libretime'
     name: Find closed references
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
         with:
@@ -30,16 +30,16 @@ jobs:
           ignore: .git,/docs/releases/*
 
   find_broken_links:
-    if: github.repository_owner == 'LibreTime'
+    if: github.repository_owner == 'libretime'
     name: Find broken links
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Check Links
         id: lychee
-        uses: lycheeverse/lychee-action@v1.3.1
+        uses: lycheeverse/lychee-action@v1.3.2
         with:
           args: >-
             '**/*.md'
