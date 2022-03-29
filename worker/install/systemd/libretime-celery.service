@@ -2,6 +2,7 @@
 Description=LibreTime Worker Service
 
 [Service]
+Environment=LIBRETIME_LOG_FILEPATH=/var/log/libretime/worker.log
 Environment=LIBRETIME_CONFIG_FILEPATH=/etc/airtime/airtime.conf
 WorkingDirectory=/var/lib/libretime/worker
 
