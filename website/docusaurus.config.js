@@ -24,6 +24,12 @@ const config = {
         indexPages: false,
       },
     ],
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: require("./redirects"),
+      },
+    ],
   ],
 
   i18n: {
@@ -88,6 +94,7 @@ const config = {
           { ...vars.repository, position: "right" },
           { ...vars.forum, position: "right" },
           { ...vars.channel, position: "right" },
+          { type: "docsVersionDropdown", position: "right" },
           // { type: "localeDropdown", position: "right" },
         ],
       },
