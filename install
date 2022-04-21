@@ -1038,7 +1038,7 @@ if [ ! -d /var/log/libretime ]; then
   mkdir_and_chown "$web_user:$web_user" "/var/log/libretime"
 
   verbose "\n * Copying logrotate files..."
-  loudCmd "cp ${AIRTIMEROOT}/legacy/build/airtime-php.logrotate /etc/logrotate.d/airtime-php"
+  loudCmd "cp ${AIRTIMEROOT}/legacy/install/logrotate/libretime-legacy.conf /etc/logrotate.d/airtime-php"
   loudCmd "cp ${AIRTIMEROOT}/playout/install/logrotate/libretime-liquidsoap.conf /etc/logrotate.d/libretime-liquidsoap"
 fi
 
@@ -1086,7 +1086,7 @@ systemInitInstall libretime-api "$web_user"
 mkdir -p /etc/airtime
 sed -e "s@WEB_USER@${web_user}@g" \
   -e "s@WEB_ROOT@${web_root}@g" \
-  "${AIRTIMEROOT}/installer/uwsgi/libretime-api.ini" > /etc/airtime/libretime-api.ini
+  "${AIRTIMEROOT}/api/install/uwsgi/libretime-api.ini" > /etc/airtime/libretime-api.ini
 verbose "...Done"
 
 verbose "\n * Setting permissions on /var/log/libretime..."
